@@ -126,7 +126,8 @@ echo "CONFIG_PACKAGE_qca-nss-ecm=y" >> .config
 # 设置固件分区大小 (防止插件装不下)
 echo "CONFIG_TARGET_ROOTFS_PARTSIZE=2048" >> .config
 echo "CONFIG_IMAGE_ROOTFS_EXTRA_SPACE=256" >> .config
-
+# 编译uboot固件
+echo "CONFIG_TARGET_ROOTFS_SQUASHFS=y" >> .config
 # --- 4. 系统微调 ---
 # 修改默认 IP
 if [ -f "package/base-files/files/bin/config_generate" ]; then
