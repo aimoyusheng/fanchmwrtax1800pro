@@ -54,6 +54,39 @@ clone_all() {
     rm -rf $temp_dir
 }
 
+clone_subdir() {
+    local repo_url branch subdir target_dir temp_dir=$(mktemp -d)
+    if [[ "$1" == */* ]]; then
+        repo_url="$1"
+        subdir="$2"
+        target_dir="$3"
+        shift 3
+    else
+        branch="-b $1 --single-branch"
+        repo_url="$2"
+        subdir="$3"
+        target_dir="$4"
+        shift 4
+    fi
+    
+    for i in {1..3}; do
+        git clone -q $branch --depth=1 --timeout=10 "$repo_url" "$temp_dir" 2>/dev/null
+        if [ $? -eq 0 ]; then
+            break
+        fi
+        sleep 2
+    done
+    
+    if [[ -d "$temp_dir/$subdir" ]]; then
+        mkdir -p "package/A/$target_dir" 2>/dev/null
+        cp -rf "$temp_dir/$subdir"/* "package/A/$target_dir"/ 2>/dev/null
+        print_info "$(color cb 添加)" "package/A/$target_dir (subdir: $subdir)" [ "$(color cb ✔)" ]
+    else
+        print_info "$(color cr 拉取失败)" "package/A/$target_dir (subdir: $subdir)" [ "$(color cr ❌)" ]
+    fi
+    rm -rf "$temp_dir" 2>/dev/null
+}
+
 # --- 2. 下载额外插件 ---
 mkdir -p package/A
 echo "正在下载插件..."
