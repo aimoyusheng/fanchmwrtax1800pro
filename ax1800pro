@@ -62,7 +62,18 @@ echo "正在下载插件..."
 git_clone https://github.com/sbwml/packages_lang_golang golang
 clone_all https://github.com/sbwml/luci-app-alist
 clone_all https://github.com/sbwml/luci-app-mosdns
-
+# 4. Diskman 磁盘管理 (特殊处理：直接下载 Makefile)
+echo "正在下载 luci-app-diskman..."
+mkdir -p package/A/luci-app-diskman package/A/parted
+wget -q https://raw.githubusercontent.com/lisaac/luci-app-diskman/master/applications/luci-app-diskman/Makefile -O package/A/luci-app-diskman/Makefile
+wget -q https://raw.githubusercontent.com/lisaac/luci-app-diskman/master/Parted.Makefile -O package/A/parted/Makefile
+print_info "$(color cb 添加)" "package/A/luci-app-diskman" [ "$(color cb ✔)" ]
+print_info "$(color cb 添加)" "package/A/parted" [ "$(color cb ✔)" ]
+git_clone https://github.com/sirpdboy/luci-app-partexp
+git_clone https://github.com/openwrt-xiaomi/luci-app-cpufreq
+git_clone https://github.com/DevOpenWRT-Router/luci-app-cpulimit
+git_clone https://github.com/QC3284/luci-app-ramfree
+git_clone https://github.com/tano-systems/luci-app-tn-ttyd
 # 科学上网 (如果有冲突请注释掉)
 clone_all https://github.com/fw876/helloworld
 clone_all https://github.com/Openwrt-Passwall/openwrt-passwall-packages
@@ -95,7 +106,8 @@ echo "CONFIG_PACKAGE_qca-nss-drv=y" >> .config
 echo "CONFIG_PACKAGE_qca-nss-ecm=y" >> .config
 
 # 设置固件分区大小 (防止插件装不下)
-echo "CONFIG_TARGET_ROOTFS_PARTSIZE=1024" >> .config
+echo "CONFIG_TARGET_ROOTFS_PARTSIZE=2048" >> .config
+echo "CONFIG_IMAGE_ROOTFS_EXTRA_SPACE=256" >> .config
 
 # --- 4. 系统微调 ---
 # 修改默认 IP
