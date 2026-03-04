@@ -78,7 +78,7 @@ git_clone https://github.com/tano-systems/luci-app-tn-ttyd
 clone_all https://github.com/fw876/helloworld
 clone_all https://github.com/Openwrt-Passwall/openwrt-passwall-packages
 clone_all https://github.com/Openwrt-Passwall/openwrt-passwall
-clone_dir https://github.com/vernesong/OpenClash luci-app-openclash
+clone_subdir https://github.com/vernesong/OpenClash luci-app-openclash luci-app-openclash
 
 # 主题
 git_clone https://github.com/jerrykuku/luci-theme-argon
