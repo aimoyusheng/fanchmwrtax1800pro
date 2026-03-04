@@ -1,0 +1,50 @@
+name: Build FanchmWrt AX1800 Pro 固件
+on:
+  push:
+    branches: [ "fanchmwrt-24.10.4" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: 1. 拉取仓库代码
+        uses: actions/checkout@v4
+        with:
+          ref: fanchmwrt-24.10.4
+
+      - name: 2. 安装编译依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache ecj fastjar file g++ gawk \
+            gettext git java-propose-classpath libelf-dev libncurses5-dev \
+            libncursesw5-dev libssl-dev python3 python3-distutils python3-setuptools \
+            rsync subversion swig time unzip wget xsltproc zlib1g-dev
+
+      - name: 3. 更新&安装 feeds 源
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: 4. 执行自定义编译脚本
+        run: |
+          chmod +x ax1800pro
+          ./ax1800pro
+
+      - name: 5. 下载编译所需源码包
+        run: |
+          make defconfig
+          make download -j8
+
+      - name: 6. 编译固件 (预计1-2小时)
+        run: |
+          make -j$(nproc) || make -j1 V=s
+
+      - name: 7. 打包输出固件
+        uses: actions/upload-artifact@v4
+        with:
+          name: FanchmWrt-AX1800-Pro-固件
+          path: bin/targets/qualcommax/ipq60xx/
+          retention-days: 30
