@@ -53,39 +53,6 @@ clone_all() {
     print_info $(color cb 添加) "Whole Repo: $repo_url" [ $(color cb ✔) ]
     rm -rf $temp_dir
 }
-
-clone_all() {
-    local repo_url branch temp_dir=$(mktemp -d)
-    if [[ "$1" == */* ]]; then
-        repo_url="$1"
-        shift
-    else
-        branch="-b $1 --single-branch"
-        repo_url="$2"
-        shift 2
-    fi
-    
-    for i in {1..3}; do
-        git clone -q $branch --depth=1 --timeout=15 "$repo_url" "$temp_dir" 2>/dev/null
-        if [ $? -eq 0 ] && [ "$(ls -A $temp_dir 2>/dev/null)" ]; then
-            break
-        fi
-        rm -rf "$temp_dir" 2>/dev/null
-        sleep 3
-    done
-    
-    if [ -d "$temp_dir" ] && [ "$(ls -A $temp_dir 2>/dev/null)" ]; then
-        cp -rf "$temp_dir"/* package/A/ 2>/dev/null
-        print_info "$(color cb 添加)" "Whole Repo: $repo_url" [ "$(color cb ✔)" ]
-        rm -rf "$temp_dir" 2>/dev/null
-        return 0
-    else
-        print_info "$(color cr 拉取失败)" "Whole Repo: $repo_url" [ "$(color cr ❌)" ]
-        rm -rf "$temp_dir" 2>/dev/null
-        return 1
-    fi
-}
-
 # --- 2. 下载额外插件 ---
 mkdir -p package/A
 echo "正在下载插件..."
